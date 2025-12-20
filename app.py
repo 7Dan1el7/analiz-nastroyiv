@@ -1,5 +1,5 @@
 import streamlit as st
-from transformers import pipeline
+from transformers.pipelines import pipeline
 import pandas as pd
 import plotly.express as px
 
