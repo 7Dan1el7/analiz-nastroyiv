@@ -1,0 +1,32 @@
+name: CI/CD Deploy to Hugging Face
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "ci@github.com"
+          git config --global user.name "GitHub Actions"
+
+          git clone https://huggingface.co/spaces/mdanya31/analiz-nastroyiv hf_space
+          rsync -av --delete . hf_space \
+            --exclude .git \
+            --exclude hf_space \
+            --exclude .github
+
+          cd hf_space
+          git add .
+          git commit -m "Auto deploy from GitHub Actions" || echo "No changes"
+          git push https://mdanya31:$HF_TOKEN@huggingface.co/spaces/mdanya31/analiz-nastroyiv
